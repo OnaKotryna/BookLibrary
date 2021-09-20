@@ -15,12 +15,11 @@ namespace BookLibrary.Business
         public void AddBook(Book book)
         {
             jsonHandler.AddBook(book);
-
         }
 
-        public void DeleteBook(Book book)
+        public void DeleteBook(int nr)
         {
-            throw new NotImplementedException();
+            jsonHandler.DeleteBook(nr);
         }
 
         public void ReturnBook(Book book)

@@ -31,5 +31,12 @@ namespace BookLibrary.Data
             books = JsonConvert.DeserializeObject<List<Book>>(json);
             return books;
         }
+
+        public void DeleteBook(int nr)
+        {
+            List<Book> books = ReadBookBank();
+            books.RemoveAt(nr);
+            File.WriteAllText(fullPath, JsonConvert.SerializeObject(books));
+        }
     }
 }

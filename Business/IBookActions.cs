@@ -14,6 +14,6 @@ namespace BookLibrary.Business
         public Book TakeBook();
         public void ReturnBook(Book book);
         public List<Book> GetBookList(Filters filter);
-        public void DeleteBook(Book book);
+        public void DeleteBook(int nr);
     }
 }
