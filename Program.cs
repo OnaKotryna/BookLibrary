@@ -19,7 +19,7 @@ namespace BookLibrary
                                         "\n4 - view all books" +
                                         "\n5 - delete a book" +
                                         "\n0 - exit" +
-                                        "\nEnter preferred action number: ";
+                                        "\nEnter preferred action's number: ";
 
             Console.WriteLine(actionString);
             int action = Int32.Parse(Console.ReadLine());
@@ -33,18 +33,51 @@ namespace BookLibrary
                     {
                         case 1:
                             Console.WriteLine("----------------------\nAdd a Book\n");
-                            GetBooksData(bookActions);
+                            Book book = GetBooksData();
+                            bookActions.AddBook(book);
                             Console.WriteLine("\nBook is added.\n");
                             break;
                         case 2:
                             Console.WriteLine("----------------------\nTake a Book\n");
+                            Console.WriteLine("Action unavailable.");
                             break;
                         case 3:
                             Console.WriteLine("----------------------\nReturn a Book\n");
+                            Console.WriteLine("Action unavailable.");
                             break;
                         case 4:
                             Console.WriteLine("----------------------\nView Books\n");
-                            PrintBookList(bookActions);
+                            Console.WriteLine("Filter the list? y/n");
+                            string anw = Console.ReadLine();
+                            if (anw.StartsWith('y'))
+                            {
+                                Console.WriteLine("\nAvailable filters:");
+                                int i = 0;
+                                foreach(Filters filter in Enum.GetValues(typeof(Filters)))
+                                {
+                                    Console.WriteLine(i++ + ". " + filter);
+                                }
+                                Console.WriteLine("\nEnter preferred filter's number:");
+                                int filterType = Int32.Parse(Console.ReadLine());
+                                
+                                List<Book> filteredList = GetFilteredList(filterType);
+                                if(filteredList.Count > 0)
+                                {
+                                    PrintFilteredBookList(filteredList);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("No books found.");
+                                }
+
+                            } else if (anw.StartsWith('n'))
+                            {
+                                PrintAllBookList(bookActions);
+                            } else
+                            {
+                                Console.WriteLine("Illegal answer.");
+                            }
+
                             break;
                         case 5:
                             Console.WriteLine("----------------------\nDelete a Book\n");
@@ -79,9 +112,63 @@ namespace BookLibrary
             Console.WriteLine("Exiting Library");
         }
 
-        private static void PrintBookList(BookActions bookActions)
+        private static List<Book> GetFilteredList(int filterType)
         {
-            List<Book> books = bookActions.GetBookList(Filters.None);
+            FilterActions filterActions = new();
+            switch (filterType)
+            {
+                case (int)Filters.Author:
+                    Console.WriteLine("Enter author:");
+                    string authorName = Console.ReadLine();
+                    return filterActions.FilterByAuthor(authorName);
+
+                case (int)Filters.Name:
+                    Console.WriteLine("Enter name:");
+                    string bookName = Console.ReadLine();
+                    return filterActions.FilterByName(bookName);
+
+                case (int)Filters.Category:
+                    Console.WriteLine("Enter category:");
+                    string category = Console.ReadLine();
+                    return filterActions.FilterByCategory(category);
+
+                case (int)Filters.ISBN:
+                    Console.WriteLine("Enter ISBN:");
+                    string isbn = Console.ReadLine();
+                    return filterActions.FilterByISBN(isbn);
+
+                case (int)Filters.Language:
+                    Console.WriteLine("Enter language:");
+                    string language = Console.ReadLine();
+                    return filterActions.FilterByLanguage(language);
+
+                /*case (int)Filters.Availability:
+                    Console.WriteLine("Enter availability: taken/available");
+                    string availability = Console.ReadLine();
+                    return filterActions.FilterByName(availability);*/
+                default:
+                    Console.WriteLine("Filter not found.");
+                    break;
+            }
+            return new List<Book>();
+        }
+
+        private static void PrintFilteredBookList(List<Book> books)
+        {
+            string datePattern = "yyyy-MM-dd";
+            foreach (var bk in books)
+            {
+                Console.WriteLine("Name: {0}" +
+                    "\nAuthor: {1}" +
+                    "\nCategory: {2}" +
+                    "\nLanguage: {3}" +
+                    "\nPublication date: {4}" +
+                    "\nISBN: {5}\n", bk.Name, bk.Author, bk.Category, bk.Language, bk.Published.ToString(datePattern), bk.Isbn);
+            }
+        }
+        private static void PrintAllBookList(BookActions bookActions)
+        {
+            List<Book> books = bookActions.GetBookList();
             string datePattern = "yyyy-MM-dd";
 
             foreach (var bk in books)
@@ -94,7 +181,7 @@ namespace BookLibrary
                     "\nISBN: {5}\n", bk.Name, bk.Author, bk.Category, bk.Language, bk.Published.ToString(datePattern), bk.Isbn);
             }
         }
-        private static void GetBooksData(BookActions bookActions)
+        private static Book GetBooksData()
         {
             Book book = new Book();
             string datePattern = "yyyy-MM-dd";
@@ -112,12 +199,12 @@ namespace BookLibrary
             Console.WriteLine("ISBN: ");
             book.Isbn = Console.ReadLine();
 
-            bookActions.AddBook(book);
+            return book;
         }
 
         private static void PrintSimplifiedBookList(BookActions bookActions)
         {
-            List<Book> books = bookActions.GetBookList(Filters.None);
+            List<Book> books = bookActions.GetBookList();
 
             for (int i = 0; i < books.Count; i++)
             {

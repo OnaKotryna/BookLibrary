@@ -32,7 +32,7 @@ namespace BookLibrary.Business
             throw new NotImplementedException();
         }
 
-        public List<Book> GetBookList(Filters filter)
+        public List<Book> GetBookList()
         {
             List<Book> books = jsonHandler.ReadBookBank();
             return books;

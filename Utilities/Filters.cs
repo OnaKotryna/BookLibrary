@@ -8,13 +8,11 @@ namespace BookLibrary.Utilities
 {
     public enum Filters
     {
-        None,
         Author,
         Category,
         Language,
         ISBN,
         Name,
-        Taken,
-        Available
+        Availability
     }
 }

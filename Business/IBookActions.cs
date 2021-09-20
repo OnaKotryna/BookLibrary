@@ -13,7 +13,7 @@ namespace BookLibrary.Business
         public void AddBook(Book book);
         public Book TakeBook();
         public void ReturnBook(Book book);
-        public List<Book> GetBookList(Filters filter);
+        public List<Book> GetBookList();
         public void DeleteBook(int nr);
     }
 }
