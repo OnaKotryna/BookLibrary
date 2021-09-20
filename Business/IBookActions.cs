@@ -11,8 +11,8 @@ namespace BookLibrary.Business
     public interface IBookActions
     {
         public void AddBook(Book book);
-        public Book TakeBook();
-        public void ReturnBook(Book book);
+        public void TakeBook(int id);
+        public void ReturnBook(int id);
         public List<Book> GetBookList();
         public void DeleteBook(int nr);
     }

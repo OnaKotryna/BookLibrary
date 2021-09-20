@@ -14,6 +14,6 @@ namespace BookLibrary.Business
         public List<Book> FilterByLanguage(string language);
         public List<Book> FilterByISBN(string isbn);
         public List<Book> FilterByName(string name);
-        //public List<Book> FilterByAvailability(int x);
+        public List<Book> FilterByAvailability(string x);
     }
 }

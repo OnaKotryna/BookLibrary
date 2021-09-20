@@ -27,6 +27,7 @@ namespace BookLibrary
             if (Validation.CheckInt(action))
             {
                 BookActions bookActions = new();
+                ReaderActions readerActions = new();
                 while (action != 0)
                 { 
                     switch (action)
@@ -37,14 +38,58 @@ namespace BookLibrary
                             bookActions.AddBook(book);
                             Console.WriteLine("\nBook is added.\n");
                             break;
+
                         case 2:
                             Console.WriteLine("----------------------\nTake a Book\n");
-                            Console.WriteLine("Action unavailable.");
+                            Reader reader = new();
+
+                            Console.WriteLine("Choose book to take:");
+                            List<Book> availableBooks = GetAvailableBooks(bookActions);
+                            if (availableBooks.Count > 0)
+                            {
+                                PrintSimplifiedBookList(availableBooks);
+                            } else
+                            {
+                                Console.WriteLine("No books were found.");
+                                break;
+                            }
+
+                            Console.WriteLine("\nEnter book's number: ");
+                            reader.BookId = Int32.Parse(Console.ReadLine());
+
+
+                            Console.WriteLine("Enter your ID: ");                       //validate 3 books max
+                            reader.ReaderId = Console.ReadLine();
+                            if(readerActions.GetReaderBooks(reader).Count >= 3)
+                            {
+                                Console.WriteLine("Exceeded max book limit.");
+                                break;
+                            }
+
+                            Console.WriteLine("Enter day number: ");                    //validate 60 days max
+                            reader.DayNumber = Int32.Parse(Console.ReadLine());
+                            while(reader.DayNumber > 60 || reader.DayNumber <= 0)
+                            {
+                                if(reader.DayNumber > 60)
+                                {
+                                    Console.WriteLine("Max day number: 60");
+                                } else if (reader.DayNumber <= 0)
+                                {
+                                    Console.WriteLine("Min day number: 1");
+                                }
+                                reader.DayNumber = Int32.Parse(Console.ReadLine());
+                            }
+
+                            readerActions.TakeBook(reader);
+
+                            bookActions.TakeBook(reader.BookId);
                             break;
+
                         case 3:
                             Console.WriteLine("----------------------\nReturn a Book\n");
                             Console.WriteLine("Action unavailable.");
                             break;
+
                         case 4:
                             Console.WriteLine("----------------------\nView Books\n");
                             Console.WriteLine("Filter the list? y/n");
@@ -63,13 +108,13 @@ namespace BookLibrary
                                 List<Book> filteredList = GetFilteredList(filterType);
                                 if(filteredList.Count > 0)
                                 {
+                                    Console.WriteLine("Books:\n");
                                     PrintFilteredBookList(filteredList);
                                 }
                                 else
                                 {
-                                    Console.WriteLine("No books found.");
+                                    Console.WriteLine("No books were found.");
                                 }
-
                             } else if (anw.StartsWith('n'))
                             {
                                 PrintAllBookList(bookActions);
@@ -77,15 +122,16 @@ namespace BookLibrary
                             {
                                 Console.WriteLine("Illegal answer.");
                             }
-
                             break;
+
                         case 5:
-                            Console.WriteLine("----------------------\nDelete a Book\n");
-                            PrintSimplifiedBookList(bookActions);
+                            Console.WriteLine("----------------------\nDelete a Book\n"); // tam, 
+                            PrintSimplifiedBookList(GetAvailableBooks(bookActions));
                             int nr = AskForBookNr();
                             DeleteBook(bookActions, nr);
                             Console.WriteLine("\nBook is deleted.\n");
                             break;
+
                         default:
                             Console.WriteLine("Enter available action.");
                             break;
@@ -110,6 +156,11 @@ namespace BookLibrary
             }
 
             Console.WriteLine("Exiting Library");
+        }
+
+        private static List<Book> GetAvailableBooks(BookActions bookActions)
+        {
+            return bookActions.GetBookList().FindAll(book => book.Taken == false);
         }
 
         private static List<Book> GetFilteredList(int filterType)
@@ -142,10 +193,10 @@ namespace BookLibrary
                     string language = Console.ReadLine();
                     return filterActions.FilterByLanguage(language);
 
-                /*case (int)Filters.Availability:
+                case (int)Filters.Availability:
                     Console.WriteLine("Enter availability: taken/available");
                     string availability = Console.ReadLine();
-                    return filterActions.FilterByName(availability);*/
+                    return filterActions.FilterByAvailability(availability);
                 default:
                     Console.WriteLine("Filter not found.");
                     break;
@@ -202,10 +253,8 @@ namespace BookLibrary
             return book;
         }
 
-        private static void PrintSimplifiedBookList(BookActions bookActions)
+        private static void PrintSimplifiedBookList(List<Book> books)
         {
-            List<Book> books = bookActions.GetBookList();
-
             for (int i = 0; i < books.Count; i++)
             {
                 Console.WriteLine(i + ". " + books[i].Name);

@@ -13,30 +13,33 @@ namespace BookLibrary.Data
     {
 
         private static string path = @"C:\Users\Ona Kotryna\source\repos\BookLibrary\Data";
-        private static string fileName = "BookBank.json";
-        private string fullPath = Path.Combine(path, fileName);
 
-        public void AddBook(Book book)
+        public void AddItem<T>(T item, string fileName)
         {
-            List<Book> books = ReadBookBank();
-            books.Add(book);
-
-            File.WriteAllText(fullPath, JsonConvert.SerializeObject(books));
+            List<T> items = ReadItemBank<T>(fileName);
+            items.Add(item);
+            SaveFile<T>(items, fileName);
         }
 
-        public List<Book> ReadBookBank()
+        public List<T> ReadItemBank<T>(string fileName)
         {
-            List<Book> books;
+            List<T> items;
+            string fullPath = Path.Combine(path, fileName);
             string json = File.ReadAllText(fullPath);
-            books = JsonConvert.DeserializeObject<List<Book>>(json);
-            return books;
+            items = JsonConvert.DeserializeObject<List<T>>(json);
+            return items;
         }
 
-        public void DeleteBook(int nr)
+        public void DeleteItem<T>(int nr, string fileName)
         {
-            List<Book> books = ReadBookBank();
-            books.RemoveAt(nr);
-            File.WriteAllText(fullPath, JsonConvert.SerializeObject(books));
+            List<T> items = ReadItemBank<T>(fileName);
+            items.RemoveAt(nr);
+            SaveFile<T>(items, fileName);
+        }
+        public void SaveFile<T>(List<T> items, string fileName)
+        {
+            string fullPath = Path.Combine(path, fileName);
+            File.WriteAllText(fullPath, JsonConvert.SerializeObject(items));
         }
     }
 }

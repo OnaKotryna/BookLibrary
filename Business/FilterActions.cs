@@ -16,11 +16,20 @@ namespace BookLibrary.Business
             return books.FindAll(book => book.Author == author).ToList();
         }
 
-        /*public List<Book> FilterByAvailability(int x)
+        public List<Book> FilterByAvailability(string availability)
         {
             List<Book> books = bookActions.GetBookList();
-            return books.FindAll(book => book.Name == name).ToList();
-        }*/
+            if (availability.StartsWith("ava"))
+            {
+                return books.FindAll(book => book.Taken == false).ToList();
+            } else if (availability.StartsWith("ta"))
+            {
+                return books.FindAll(book => book.Taken == true).ToList();
+            } else
+            {
+                return new List<Book>();
+            }
+        }
 
         public List<Book> FilterByCategory(string category)
         {
