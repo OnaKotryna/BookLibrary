@@ -1,0 +1,65 @@
+[
+  {
+    "Name": "Harry Potter",
+    "Author": "JK Rowling",
+    "Category": "fiction",
+    "Language": "en",
+    "Published": "2001-01-01T00:00:00",
+    "Isbn": "978-4-4810-6152-1",
+    "Taken": true
+  },
+  {
+    "Name": "El Barto",
+    "Author": "Bart Simpson",
+    "Category": "fiction",
+    "Language": "lt",
+    "Published": "2001-01-01T00:00:00",
+    "Isbn": "123-501-123-456-2",
+    "Taken": false
+  },
+  {
+    "Name": "Petro Imperatore",
+    "Author": "Kristina Sabaliauskaite",
+    "Category": "romanas",
+    "Language": "lt",
+    "Published": "2001-01-01T00:00:00",
+    "Isbn": "978-5-1542-2667-4",
+    "Taken": true
+  },
+  {
+    "Name": "Drei Kameraden",
+    "Author": "E. M. Remarque",
+    "Category": "fantasy",
+    "Language": "de",
+    "Published": "2036-11-01T00:00:00",
+    "Isbn": "978-8-9191-6585-0",
+    "Taken": true
+  },
+  {
+    "Name": "Spark of Life",
+    "Author": "E. M. Remarque",
+    "Category": "fantasy",
+    "Language": "en",
+    "Published": "2052-05-06T00:00:00",
+    "Isbn": "978-1-0499-9153-5",
+    "Taken": true
+  },
+  {
+    "Name": "MaddAddam",
+    "Author": "Margaret Atwood",
+    "Category": "fantasy",
+    "Language": "en",
+    "Published": "2011-11-01T00:00:00",
+    "Isbn": "978-8-9191-6585-0",
+    "Taken": false
+  },
+  {
+    "Name": "Petro Imperatore II",
+    "Author": "Kristina Sabaliauskaite",
+    "Category": "romanas",
+    "Language": "lt",
+    "Published": "2014-01-01T00:00:00",
+    "Isbn": "978-5-1542-2667-4",
+    "Taken": false
+  }
+]

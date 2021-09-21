@@ -12,13 +12,15 @@ namespace BookLibrary.Data
     public class JsonHandler
     {
         // A class that works with data file
-        private static string path = @"C:\Users\Ona Kotryna\source\repos\BookLibrary\Data";
-
+        private static string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Data");
+        
         public void AddItem<T>(T item, string fileName)
         {
             List<T> items = ReadItemBank<T>(fileName);
             items.Add(item);
             SaveFile<T>(items, fileName);
+
+            
         }
 
         // Reads all file (gets all elements)
