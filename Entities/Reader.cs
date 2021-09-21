@@ -8,14 +8,14 @@ namespace BookLibrary.Entities
 {
     class Reader
     {
-        private string readerId;
-        private int dayNumber;
-        private DateTime dateTaken = DateTime.Now;
+        private int readerId;
         private int bookId;
+        private double dayNumber;
+        private DateTime dateTaken;
 
-        public string ReaderId { get => readerId; set => readerId = value; }
-        public int DayNumber { get => dayNumber; set => dayNumber = value; }
-        public DateTime DateTaken { get => dateTaken; }
+        public int ReaderId { get => readerId; set => readerId = value; }
+        public double DayNumber { get => dayNumber; set => dayNumber = value; }
+        public DateTime DateTaken { get => dateTaken; set => dateTaken = value; }
         public int BookId { get => bookId; set => bookId = value; }
     }
 }

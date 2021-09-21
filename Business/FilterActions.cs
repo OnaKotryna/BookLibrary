@@ -9,6 +9,7 @@ namespace BookLibrary.Business
 {
     class FilterActions : IFilterActions
     {
+        // A class dedicated to different filtering types
         BookActions bookActions = new();
         public List<Book> FilterByAuthor(string author)
         {
@@ -19,10 +20,10 @@ namespace BookLibrary.Business
         public List<Book> FilterByAvailability(string availability)
         {
             List<Book> books = bookActions.GetBookList();
-            if (availability.StartsWith("ava"))
+            if (availability.StartsWith("a"))
             {
                 return books.FindAll(book => book.Taken == false).ToList();
-            } else if (availability.StartsWith("ta"))
+            } else if (availability.StartsWith("t"))
             {
                 return books.FindAll(book => book.Taken == true).ToList();
             } else
@@ -53,6 +54,11 @@ namespace BookLibrary.Business
         {
             List<Book> books = bookActions.GetBookList();
             return books.FindAll(book => book.Name == name).ToList();
+        }
+
+        public List<Book> NoFilter()
+        {
+            return bookActions.GetBookList();
         }
     }
 }

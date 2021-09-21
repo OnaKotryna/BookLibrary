@@ -8,6 +8,7 @@ namespace BookLibrary.Utilities
 {
     public enum Filters
     {
+        None,
         Author,
         Category,
         Language,

@@ -11,7 +11,7 @@ namespace BookLibrary.Data
 {
     public class JsonHandler
     {
-
+        // A class that works with data file
         private static string path = @"C:\Users\Ona Kotryna\source\repos\BookLibrary\Data";
 
         public void AddItem<T>(T item, string fileName)
@@ -21,6 +21,7 @@ namespace BookLibrary.Data
             SaveFile<T>(items, fileName);
         }
 
+        // Reads all file (gets all elements)
         public List<T> ReadItemBank<T>(string fileName)
         {
             List<T> items;
@@ -30,10 +31,10 @@ namespace BookLibrary.Data
             return items;
         }
 
-        public void DeleteItem<T>(int nr, string fileName)
+        public void DeleteItem<T>(int itemNr, string fileName)
         {
             List<T> items = ReadItemBank<T>(fileName);
-            items.RemoveAt(nr);
+            items.RemoveAt(itemNr);
             SaveFile<T>(items, fileName);
         }
         public void SaveFile<T>(List<T> items, string fileName)

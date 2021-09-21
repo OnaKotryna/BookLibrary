@@ -12,155 +12,218 @@ namespace BookLibrary
         {
             
             Console.WriteLine("Visma's Library");
-            string actionString = "------------------------------------" +
-                "\nAvailable actions:   \n1 - add a book" +
-                                        "\n2 - take a book" +
-                                        "\n3 - return a book" +
-                                        "\n4 - view all books" +
-                                        "\n5 - delete a book" +
-                                        "\n0 - exit" +
-                                        "\nEnter preferred action's number: ";
 
-            Console.WriteLine(actionString);
-            int action = Int32.Parse(Console.ReadLine());
+            int command = -1;
+            BookActions bookActions = new();
+            ReaderActions readerActions = new();
 
-            if (Validation.CheckInt(action))
+            while (command != 0)
             {
-                BookActions bookActions = new();
-                ReaderActions readerActions = new();
-                while (action != 0)
-                { 
-                    switch (action)
+                // Printing command menu and getting user's preferred command
+                Console.WriteLine(Messages.CommandMenu);
+                string commandStr = Console.ReadLine();
+                if (Int32.TryParse(commandStr, out command))
+                {
+                    switch (command)
                     {
                         case 1:
+                            // Command to add a new book.
                             Console.WriteLine("----------------------\nAdd a Book\n");
+                            //Getting book's data
                             Book book = GetBooksData();
                             bookActions.AddBook(book);
-                            Console.WriteLine("\nBook is added.\n");
+                            Console.WriteLine(Messages.BookAdded);
                             break;
 
                         case 2:
+                            // Command to take a book from the library.
                             Console.WriteLine("----------------------\nTake a Book\n");
+                            // Getting reader's data
                             Reader reader = new();
-
                             Console.WriteLine("Choose book to take:");
-                            List<Book> availableBooks = GetAvailableBooks(bookActions);
-                            if (availableBooks.Count > 0)
-                            {
-                                PrintSimplifiedBookList(availableBooks);
-                            } else
-                            {
-                                Console.WriteLine("No books were found.");
-                                break;
-                            }
 
+                            List<Book> books = GetFilteredList((int)Filters.None);
+                            PrintSimplifiedBookList(books);
+
+                            // Choosing preferred book 
                             Console.WriteLine("\nEnter book's number: ");
-                            reader.BookId = Int32.Parse(Console.ReadLine());
+                            string bookNr = Console.ReadLine();
 
+                            // Check if number
+                            if(Int32.TryParse(bookNr, out int parsedNr)){
+                                reader.BookId = parsedNr;
 
-                            Console.WriteLine("Enter your ID: ");                       //validate 3 books max
-                            reader.ReaderId = Console.ReadLine();
-                            if(readerActions.GetReaderBooks(reader).Count >= 3)
-                            {
-                                Console.WriteLine("Exceeded max book limit.");
-                                break;
-                            }
-
-                            Console.WriteLine("Enter day number: ");                    //validate 60 days max
-                            reader.DayNumber = Int32.Parse(Console.ReadLine());
-                            while(reader.DayNumber > 60 || reader.DayNumber <= 0)
-                            {
-                                if(reader.DayNumber > 60)
+                                // Check if there is a book with given number
+                                if (reader.BookId > books.Count || reader.BookId < 0)
                                 {
-                                    Console.WriteLine("Max day number: 60");
-                                } else if (reader.DayNumber <= 0)
+                                    Console.WriteLine(Messages.NoBook);
+                                    break;
+                                } else if (books[reader.BookId].Taken)  // check if a book is taken
                                 {
-                                    Console.WriteLine("Min day number: 1");
+                                    Console.WriteLine("Book is taken.");
+                                    break;
                                 }
-                                reader.DayNumber = Int32.Parse(Console.ReadLine());
+
+                                // Id to distinguish readers
+                                Console.WriteLine("Enter Your ID: ");
+                                string enteredId = Console.ReadLine();
+
+                                // Check if number
+                                if (Int32.TryParse(enteredId, out int parsedId))
+                                {
+                                    reader.ReaderId = parsedId;
+                                    List<Reader> readerBooks = readerActions.GetReaderBooks(reader.ReaderId);
+                                    if (readerBooks.Count >= 3) // Validates 3 books max
+                                    {
+                                        Console.WriteLine(Messages.ExceedeLimit);
+                                        break;
+                                    }
+                                    // Specifying period
+                                    Console.WriteLine("Enter day number: ");
+                                    string enteredDays = Console.ReadLine();
+
+                                    // Check if number
+                                    if (Int32.TryParse(enteredDays, out int parsedDays))
+                                    {
+                                        reader.DayNumber = parsedDays;
+                                        while (reader.DayNumber > 60 || reader.DayNumber <= 0)       // Validates 60 days max
+                                        {
+                                            if (reader.DayNumber > 60)
+                                            {
+                                                Console.WriteLine(Messages.MaxDayLimit);
+                                            }
+                                            else if (reader.DayNumber <= 0)
+                                            {
+                                                Console.WriteLine(Messages.MinDayLimit);
+                                            }
+                                            reader.DayNumber = Int32.Parse(Console.ReadLine());
+                                        }
+                                        reader.DateTaken = DateTime.UtcNow.Date;
+                                        // saving collected data
+                                        readerActions.TakeBook(reader);
+                                        bookActions.TakeBook(reader.BookId);
+                                        Console.WriteLine(Messages.BookTaken);
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(Messages.NotInteger);
+                                    }
+                                } 
+                                else
+                                {
+                                    Console.WriteLine(Messages.NotInteger);
+                                }
+                            } 
+                            else
+                            {
+                                Console.WriteLine(Messages.NotInteger);
                             }
-
-                            readerActions.TakeBook(reader);
-
-                            bookActions.TakeBook(reader.BookId);
                             break;
 
                         case 3:
+                            // Command to return a book.
                             Console.WriteLine("----------------------\nReturn a Book\n");
-                            Console.WriteLine("Action unavailable.");
-                            break;
 
+                            Console.WriteLine("Enter Your ID:");
+                            
+                            string givenId = Console.ReadLine();
+                            bool readerExist = false;
+                            if(Int32.TryParse(givenId, out int parsedGivenId))
+                            {
+                                int readerId = parsedGivenId;
+                                List<Reader> rBooks = readerActions.GetReaderBooks(readerId);
+
+                                // Check if reader exist
+                                foreach (var r in rBooks)
+                                {
+                                    if (r.ReaderId == readerId)
+                                    {
+                                        readerExist = true;
+                                        break;
+                                    }
+                                }
+                                if (readerExist)
+                                {
+                                    Console.WriteLine("Which book do you want to return?");
+                                    PrintSimplifiedBookList(GetFilteredList((int)Filters.None));
+                                    int bookToReturn = AskForBookNr();
+                                    // checking if the chosen book is taken by reader
+                                    if(rBooks.FindAll(x => x.ReaderId == readerId && x.BookId == bookToReturn).Count == 1)
+                                    {
+                                        Console.WriteLine(readerActions.ReturnBook(readerId, bookToReturn));
+                                        bookActions.ReturnBook(bookToReturn);
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Book is not taken by you.");
+                                    }
+                                } else
+                                {
+                                    Console.WriteLine("Reader not found.");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine(Messages.NotInteger);
+                            }
+                            break;
                         case 4:
+                            // Command to list all the books.
                             Console.WriteLine("----------------------\nView Books\n");
-                            Console.WriteLine("Filter the list? y/n");
-                            string anw = Console.ReadLine();
-                            if (anw.StartsWith('y'))
+
+                            Console.WriteLine("Available filters:");
+                            foreach (Filters filter in Enum.GetValues(typeof(Filters)))
                             {
-                                Console.WriteLine("\nAvailable filters:");
-                                int i = 0;
-                                foreach(Filters filter in Enum.GetValues(typeof(Filters)))
-                                {
-                                    Console.WriteLine(i++ + ". " + filter);
-                                }
-                                Console.WriteLine("\nEnter preferred filter's number:");
-                                int filterType = Int32.Parse(Console.ReadLine());
-                                
-                                List<Book> filteredList = GetFilteredList(filterType);
-                                if(filteredList.Count > 0)
-                                {
-                                    Console.WriteLine("Books:\n");
-                                    PrintFilteredBookList(filteredList);
-                                }
-                                else
-                                {
-                                    Console.WriteLine("No books were found.");
-                                }
-                            } else if (anw.StartsWith('n'))
+                                Console.WriteLine((int)filter + ". " + filter);
+                            }
+                            Console.WriteLine("\nEnter preferred filter's number:");
+                            int filterType = Int32.Parse(Console.ReadLine());
+
+                            List<Book> filteredList = GetFilteredList(filterType);
+                            if (filteredList.Count > 0)
                             {
-                                PrintAllBookList(bookActions);
-                            } else
+                                Console.WriteLine("Books:\n");
+                                PrintFilteredBookList(filteredList);
+                            }
+                            else
                             {
-                                Console.WriteLine("Illegal answer.");
+                                Console.WriteLine(Messages.NoBooks);
                             }
                             break;
 
                         case 5:
-                            Console.WriteLine("----------------------\nDelete a Book\n"); // tam, 
-                            PrintSimplifiedBookList(GetAvailableBooks(bookActions));
+                            // Command to delete a book.
+                            Console.WriteLine("----------------------\nDelete a Book\n");
+                            PrintSimplifiedBookList(GetFilteredList((int)Filters.None)); 
                             int nr = AskForBookNr();
-                            DeleteBook(bookActions, nr);
-                            Console.WriteLine("\nBook is deleted.\n");
+                            int result = bookActions.DeleteBook(nr);
+                            // check if deleted or not
+                            if(result == 1)
+                            {
+                                Console.WriteLine("Book deleted.");
+                            } 
+                            else
+                            {
+                                Console.WriteLine("Book is taken. Cannot be deleted.");
+                            }
                             break;
 
                         default:
-                            Console.WriteLine("Enter available action.");
+                            Console.WriteLine(Messages.NotAvailableCommand);
                             break;
-                
                     }
-                    Console.WriteLine(actionString);
-                    action = Int32.Parse(Console.ReadLine());
-
-                    if(Validation.CheckInt(action))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Please enter an available action's number.");
-                    }
-
                 }
-            } else
-            {
-                Console.WriteLine("Please enter an available action's number.");
+                else
+                {
+                    command = -1;
+                    Console.WriteLine(Messages.NotAvailableCommand);
+                }
             }
 
-            Console.WriteLine("Exiting Library");
-        }
-
-        private static List<Book> GetAvailableBooks(BookActions bookActions)
-        {
-            return bookActions.GetBookList().FindAll(book => book.Taken == false);
+            // Exiting app
+            Console.WriteLine("\nExiting Library");
         }
 
         private static List<Book> GetFilteredList(int filterType)
@@ -168,6 +231,9 @@ namespace BookLibrary
             FilterActions filterActions = new();
             switch (filterType)
             {
+                case (int)Filters.None:
+                    return filterActions.NoFilter();
+
                 case (int)Filters.Author:
                     Console.WriteLine("Enter author:");
                     string authorName = Console.ReadLine();
@@ -194,11 +260,18 @@ namespace BookLibrary
                     return filterActions.FilterByLanguage(language);
 
                 case (int)Filters.Availability:
-                    Console.WriteLine("Enter availability: taken/available");
+                    Console.WriteLine("Enter availability: \nt - taken\na - available");
                     string availability = Console.ReadLine();
-                    return filterActions.FilterByAvailability(availability);
+                    if(availability.StartsWith('t') || availability.StartsWith('a'))
+                    {
+                        return filterActions.FilterByAvailability(availability);
+                    } else
+                    {
+                        Console.WriteLine(Messages.IllegalAnswer);
+                        break;
+                    }
                 default:
-                    Console.WriteLine("Filter not found.");
+                    Console.WriteLine(Messages.NoFilter);
                     break;
             }
             return new List<Book>();
@@ -217,21 +290,7 @@ namespace BookLibrary
                     "\nISBN: {5}\n", bk.Name, bk.Author, bk.Category, bk.Language, bk.Published.ToString(datePattern), bk.Isbn);
             }
         }
-        private static void PrintAllBookList(BookActions bookActions)
-        {
-            List<Book> books = bookActions.GetBookList();
-            string datePattern = "yyyy-MM-dd";
-
-            foreach (var bk in books)
-            {
-                Console.WriteLine("Name: {0}" +
-                    "\nAuthor: {1}" +
-                    "\nCategory: {2}" +
-                    "\nLanguage: {3}" +
-                    "\nPublication date: {4}" +
-                    "\nISBN: {5}\n", bk.Name, bk.Author, bk.Category, bk.Language, bk.Published.ToString(datePattern), bk.Isbn);
-            }
-        }
+        
         private static Book GetBooksData()
         {
             Book book = new Book();
@@ -257,19 +316,16 @@ namespace BookLibrary
         {
             for (int i = 0; i < books.Count; i++)
             {
-                Console.WriteLine(i + ". " + books[i].Name);
+                string bookLine = String.Format("{0}. {1}, ", i, books[i].Name);
+                bookLine = books[i].Taken ? String.Concat(bookLine, "taken") : String.Concat(bookLine, "available");
+                Console.WriteLine(bookLine);
             }
         }
 
         private static int AskForBookNr()
         {
-            Console.WriteLine("Enter book number to delete:");
+            Console.WriteLine("Enter book number:");
             return Int32.Parse(Console.ReadLine());
-        }
-
-        private static void DeleteBook(BookActions bookActions, int nr)
-        {
-            bookActions.DeleteBook(nr);
         }
         
     }

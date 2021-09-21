@@ -11,6 +11,7 @@ namespace BookLibrary.Business
 {
     class BookActions : IBookActions
     {
+        // A class dedicated to book commands
         JsonHandler jsonHandler = new JsonHandler();
 
         private static string fileName = "BookBank.json";
@@ -19,15 +20,23 @@ namespace BookLibrary.Business
             jsonHandler.AddItem<Book>(book, fileName);
         }
 
-        public void DeleteBook(int nr)
+        public int DeleteBook(int bookNr)
         {
-            jsonHandler.DeleteItem<Book>(nr, fileName);
+            List<Book> books = GetBookList();
+            if (books[bookNr].Taken)
+            {
+                return -1;
+            } else
+            {
+                jsonHandler.DeleteItem<Book>(bookNr, fileName);
+                return 1;
+            }
         }
 
-        public void ReturnBook(int id)
+        public void ReturnBook(int bookNr)
         {
             List<Book> books = jsonHandler.ReadItemBank<Book>(fileName);
-            books.ElementAt(id).Taken = false;
+            books.ElementAt(bookNr).Taken = false;
             jsonHandler.SaveFile<Book>(books, fileName);
         }
 
