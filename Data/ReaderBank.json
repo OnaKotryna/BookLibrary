@@ -1,0 +1,26 @@
+[
+  {
+    "ReaderId": 1001,
+    "DayNumber": 2.0,
+    "DateTaken": "2021-09-15T00:00:00Z",
+    "BookId": 2
+  },
+  {
+    "ReaderId": 1003,
+    "DayNumber": 2.0,
+    "DateTaken": "2021-09-21T00:00:00Z",
+    "BookId": 0
+  },
+  {
+    "ReaderId": 1001,
+    "DayNumber": 3.0,
+    "DateTaken": "2021-09-10T00:00:00Z",
+    "BookId": 4
+  },
+  {
+    "ReaderId": 1001,
+    "DayNumber": 3.0,
+    "DateTaken": "2021-09-21T00:00:00Z",
+    "BookId": 3
+  }
+]
