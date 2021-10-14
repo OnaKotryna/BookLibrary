@@ -11,7 +11,7 @@ namespace BookLibrary
         static void Main(string[] args)
         {
             
-            Console.WriteLine("Visma's Library");
+            Console.WriteLine(Messages.LibraryTitle);
 
             int command = -1;
             BookActions bookActions = new();
@@ -22,31 +22,34 @@ namespace BookLibrary
                 // Printing command menu and getting user's preferred command
                 Console.WriteLine(Messages.CommandMenu);
                 string commandStr = Console.ReadLine();
+
                 if (Int32.TryParse(commandStr, out command))
                 {
                     switch (command)
                     {
                         case 1:
                             // Command to add a new book.
-                            Console.WriteLine("----------------------\nAdd a Book\n");
-                            //Getting book's data
+                            Console.WriteLine(Messages.Tab + Messages.AddBook);
+                            // Getting book's data
                             Book book = GetBooksData();
                             bookActions.AddBook(book);
+                            // Confirm
                             Console.WriteLine(Messages.BookAdded);
                             break;
 
                         case 2:
                             // Command to take a book from the library.
-                            Console.WriteLine("----------------------\nTake a Book\n");
-                            // Getting reader's data
+                            Console.WriteLine(Messages.Tab + Messages.TakeBook);
+                            
                             Reader reader = new();
-                            Console.WriteLine("Choose book to take:");
 
+                            // Printing list of books
+                            Console.WriteLine(Messages.ListOfBooks);
                             List<Book> books = GetFilteredList((int)Filters.None);
                             PrintSimplifiedBookList(books);
 
-                            // Choosing preferred book 
-                            Console.WriteLine("\nEnter book's number: ");
+                            // Getting preferred book's id
+                            Console.WriteLine(Messages.EnterBookNumber);
                             string bookNr = Console.ReadLine();
 
                             // Check if number
@@ -60,12 +63,12 @@ namespace BookLibrary
                                     break;
                                 } else if (books[reader.BookId].Taken)  // check if a book is taken
                                 {
-                                    Console.WriteLine("Book is taken.");
+                                    Console.WriteLine(Messages.TakenBookError);
                                     break;
                                 }
 
                                 // Id to distinguish readers
-                                Console.WriteLine("Enter Your ID: ");
+                                Console.WriteLine(Messages.EnterReadersId);
                                 string enteredId = Console.ReadLine();
 
                                 // Check if number
@@ -78,8 +81,9 @@ namespace BookLibrary
                                         Console.WriteLine(Messages.ExceedeLimit);
                                         break;
                                     }
+
                                     // Specifying period
-                                    Console.WriteLine("Enter day number: ");
+                                    Console.WriteLine(Messages.EnterDayNumber);
                                     string enteredDays = Console.ReadLine();
 
                                     // Check if number
@@ -123,12 +127,13 @@ namespace BookLibrary
 
                         case 3:
                             // Command to return a book.
-                            Console.WriteLine("----------------------\nReturn a Book\n");
+                            Console.WriteLine(Messages.Tab + Messages.ReturnBook);
 
-                            Console.WriteLine("Enter Your ID:");
-                            
+                            // Get Readers ID
+                            Console.WriteLine(Messages.EnterReadersId);
                             string givenId = Console.ReadLine();
                             bool readerExist = false;
+
                             if(Int32.TryParse(givenId, out int parsedGivenId))
                             {
                                 int readerId = parsedGivenId;
@@ -145,7 +150,7 @@ namespace BookLibrary
                                 }
                                 if (readerExist)
                                 {
-                                    Console.WriteLine("Which book do you want to return?");
+                                    Console.WriteLine(Messages.AskForBookToReturn);
                                     PrintSimplifiedBookList(GetFilteredList((int)Filters.None));
                                     int bookToReturn = AskForBookNr();
                                     // checking if the chosen book is taken by reader
@@ -163,11 +168,11 @@ namespace BookLibrary
                                     }
                                     else
                                     {
-                                        Console.WriteLine("Book is not taken by you.");
+                                        Console.WriteLine(Messages.IncorrectBookError);
                                     }
                                 } else
                                 {
-                                    Console.WriteLine("Reader not found.");
+                                    Console.WriteLine(Messages.NoReader);
                                 }
                             }
                             else
@@ -177,20 +182,23 @@ namespace BookLibrary
                             break;
                         case 4:
                             // Command to list all the books.
-                            Console.WriteLine("----------------------\nView Books\n");
+                            Console.WriteLine(Messages.Tab + Messages.ViewBooks);
 
-                            Console.WriteLine("Available filters:");
+                            // Print filter options
+                            Console.WriteLine(Messages.AvailableFilters);
                             foreach (Filters filter in Enum.GetValues(typeof(Filters)))
                             {
                                 Console.WriteLine((int)filter + ". " + filter);
                             }
-                            Console.WriteLine("\nEnter preferred filter's number:");
+
+                            // Get filter type from user
+                            Console.WriteLine(Messages.EnterFilterNumber);
                             int filterType = Int32.Parse(Console.ReadLine());
 
                             List<Book> filteredList = GetFilteredList(filterType);
                             if (filteredList.Count > 0)
                             {
-                                Console.WriteLine("Books:\n");
+                                Console.WriteLine(Messages.ListOfBooks);
                                 PrintFilteredBookList(filteredList);
                             }
                             else
@@ -201,18 +209,19 @@ namespace BookLibrary
 
                         case 5:
                             // Command to delete a book.
-                            Console.WriteLine("----------------------\nDelete a Book\n");
+                            Console.WriteLine(Messages.Tab + Messages.DeleteBooks);
+                            // Print book list
                             PrintSimplifiedBookList(GetFilteredList((int)Filters.None)); 
                             int nr = AskForBookNr();
                             int result = bookActions.DeleteBook(nr);
-                            // check if deleted or not
+                            // check if can be deleted or not
                             if(result == 1)
                             {
-                                Console.WriteLine("Book deleted.");
+                                Console.WriteLine(Messages.BookDeleted);
                             } 
                             else
                             {
-                                Console.WriteLine("Book is taken. Cannot be deleted.");
+                                Console.WriteLine(Messages.TakenBookError);
                             }
                             break;
 
@@ -229,7 +238,7 @@ namespace BookLibrary
             }
 
             // Exiting app
-            Console.WriteLine("\nExiting Library");
+            Console.WriteLine(Messages.ExitMessage);
         }
 
         private static List<Book> GetFilteredList(int filterType)
@@ -241,32 +250,32 @@ namespace BookLibrary
                     return filterActions.NoFilter();
 
                 case (int)Filters.Author:
-                    Console.WriteLine("Enter author:");
+                    Console.WriteLine(Messages.EnterAuthor);
                     string authorName = Console.ReadLine();
                     return filterActions.FilterByAuthor(authorName);
 
                 case (int)Filters.Name:
-                    Console.WriteLine("Enter name:");
+                    Console.WriteLine(Messages.EnterName);
                     string bookName = Console.ReadLine();
                     return filterActions.FilterByName(bookName);
 
                 case (int)Filters.Category:
-                    Console.WriteLine("Enter category:");
+                    Console.WriteLine(Messages.EnterCategory);
                     string category = Console.ReadLine();
                     return filterActions.FilterByCategory(category);
 
                 case (int)Filters.ISBN:
-                    Console.WriteLine("Enter ISBN:");
+                    Console.WriteLine(Messages.EnterISBN);
                     string isbn = Console.ReadLine();
                     return filterActions.FilterByISBN(isbn);
 
                 case (int)Filters.Language:
-                    Console.WriteLine("Enter language:");
+                    Console.WriteLine(Messages.EnterLanguage);
                     string language = Console.ReadLine();
                     return filterActions.FilterByLanguage(language);
 
                 case (int)Filters.Availability:
-                    Console.WriteLine("Enter availability: \nt - taken\na - available");
+                    Console.WriteLine(Messages.EnterAvailability);
                     string availability = Console.ReadLine();
                     if(availability.StartsWith('t') || availability.StartsWith('a'))
                     {
@@ -302,17 +311,17 @@ namespace BookLibrary
             Book book = new Book();
             string datePattern = "yyyy-MM-dd";
 
-            Console.WriteLine("Name: ");
+            Console.WriteLine(Messages.EnterName);
             book.Name = Console.ReadLine();
-            Console.WriteLine("Author: ");
+            Console.WriteLine(Messages.EnterAuthor);
             book.Author = Console.ReadLine();
-            Console.WriteLine("Category: ");
+            Console.WriteLine(Messages.EnterCategory);
             book.Category = Console.ReadLine();
-            Console.WriteLine("Language: ");
+            Console.WriteLine(Messages.EnterLanguage);
             book.Language = Console.ReadLine();
-            Console.WriteLine("Publication date: \nformat: " + datePattern);
+            Console.WriteLine(Messages.EnterPublicationDate + datePattern);
             book.Published = DateTime.ParseExact(Console.ReadLine(), datePattern, null);
-            Console.WriteLine("ISBN: ");
+            Console.WriteLine(Messages.EnterISBN);
             book.Isbn = Console.ReadLine();
 
             return book;
@@ -330,7 +339,7 @@ namespace BookLibrary
 
         private static int AskForBookNr()
         {
-            Console.WriteLine("Enter book number:");
+            Console.WriteLine(Messages.EnterBookNumber);
             return Int32.Parse(Console.ReadLine());
         }
         
