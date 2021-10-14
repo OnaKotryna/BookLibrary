@@ -14,18 +14,17 @@ namespace BookLibrary.Business
         JsonHandler jsonHandler = new JsonHandler();
 
         private static string fileName = "ReaderBank.json";
-        public string ReturnBook(int readerId, int bookNr)
+        public int ReturnBook(int readerId, int bookNr)
         {
-            string message = "Book returned";
             Reader reader = GetReader(readerId, bookNr);
             int readerIndex = GetReaderIndex(readerId, bookNr);
             DateTime deadline = reader.DateTaken.AddDays(reader.DayNumber);
             if (deadline < DateTime.UtcNow.Date)
             {
-                message = "Oh my fur and whiskers! I'm late, I'm late, I'm late!";
+                return 1;
             }
             jsonHandler.DeleteItem<Reader>(readerIndex, fileName);
-            return message;
+            return 0;
         }
 
         public void TakeBook(Reader reader)

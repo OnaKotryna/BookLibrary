@@ -151,7 +151,13 @@ namespace BookLibrary
                                     // checking if the chosen book is taken by reader
                                     if(rBooks.FindAll(x => x.ReaderId == readerId && x.BookId == bookToReturn).Count == 1)
                                     {
-                                        Console.WriteLine(readerActions.ReturnBook(readerId, bookToReturn));
+                                        if(readerActions.ReturnBook(readerId, bookToReturn) == 0)
+                                        {
+                                            Console.WriteLine(Messages.ReturnMessage);
+                                        } else if(readerActions.ReturnBook(readerId, bookToReturn) == 1)
+                                        {
+                                            Console.WriteLine(Messages.LateReturnMessage);
+                                        }
                                         bookActions.ReturnBook(bookToReturn);
                                         break;
                                     }

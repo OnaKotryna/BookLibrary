@@ -34,7 +34,9 @@ namespace BookLibrary.Utilities
         public static string BookTaken = "\nBook taken successfully.\n";
         public static string BookDeleted = "\nBook is deleted.\n";
 
-
+        // Messages
+        public static string ReturnMessage = "\nBook is returned\n";
+        public static string LateReturnMessage = "\nOh my fur and whiskers! I'm late, I'm late, I'm late!\n";
 
     }
 }
