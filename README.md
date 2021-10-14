@@ -16,5 +16,3 @@ Console app to manage books
     - by name
     - by availability (taken or not)
   - Remove a book
-
-*I am aware that there is a requirement for unit tests, but unfortunately, I do not know how to do them correctly yet.*
