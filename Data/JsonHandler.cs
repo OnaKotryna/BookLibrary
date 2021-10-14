@@ -19,8 +19,6 @@ namespace BookLibrary.Data
             List<T> items = ReadItemBank<T>(fileName);
             items.Add(item);
             SaveFile<T>(items, fileName);
-
-            
         }
 
         // Reads all file (gets all elements)
